@@ -26,9 +26,9 @@
 \@ifclassloaded{llncs}{
   \@needsfixtrue
 }{
-  \@ifclassloaded{scrbook}{
+  \ifdefined\KOMAClassName
     \@needsfixtrue
-  }{}
+  \fi
 }
 \if@needsfix
   \def \lefttir@name #1{\hbox {\LeftTirNameStyle{#1}}} % XXX: original definition calls \small again here
@@ -53,7 +53,7 @@
     \IfBooleanF{#1}{% numbered
       \refstepcounter{inferrule}%
       \IfValueTF{#2}{%
-        \zref@setcurrent{inferrule@name}{\TirName{#2}}%
+        \zref@setcurrent{inferrule@name}{\protect\TirName{#2}}%
       }{%
         \zref@setcurrent{inferrule@name}{\the\value{inferrule}}%
       }%
