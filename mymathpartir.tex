@@ -1,0 +1,121 @@
+\documentclass{article}
+
+\usepackage[crefname,capitalize]{mymathpartir}
+\usepackage{cleveref}
+
+\begin{document}
+\title{\texttt{mymathpartir} Sample Document}
+\author{}
+\date{}
+
+\maketitle
+
+\begin{verbatim*}
+\usepackage[crefname,capitalize]{mymathpartir}
+\usepackage{cleveref}
+\end{verbatim*}
+
+\begin{verbatim*}
+\begin{mathpar}
+\inferrule[R]{P}{C}\label{rule:1}
+
+\inferrule*{P}{C}
+
+\inferrule{P}{C}\label{rule:2}
+
+\inferrule*[S]{P}{C}
+\end{mathpar}
+\end{verbatim*}
+%
+\begin{mathpar}
+  \inferrule[R]{P}{C}\label{rule:1} % numbered and labeled rule
+
+  \inferrule*{P}{C}                 % unnumbered and unlabeled rule
+
+  \inferrule{P}{C}\label{rule:2}    % numbered and unlabeled rule
+
+  \inferrule*[S]{P}{C}              % unnumbered and labeled rule
+\end{mathpar}
+
+\begin{verbatim*}
+\begin{mathpar}
+\inferrule[T][right]{P}{C}\label{rule:3}
+
+\inferrule*{P}{C}
+
+\inferrule[right]{P}{C}\label{rule:4} % BUG
+
+\inferrule*[U][right]{P}{C}
+\end{mathpar}
+\end{verbatim*}
+%
+\begin{mathpar}
+  \inferrule[T][right]{P}{C}\label{rule:3}
+
+  \inferrule*{P}{C}
+
+  \inferrule[right]{P}{C}\label{rule:4} % BUG
+
+  \inferrule*[U][right]{P}{C}
+\end{mathpar}
+
+\begin{verbatim*}
+\begin{mathpar}
+\inferrule[V]{P}[S]{C}\label{rule:5}
+
+\inferrule*{P}[S]{C}
+
+\inferrule{P}[S]{C}\label{rule:6}
+
+\inferrule*[W]{P}[S]{C}
+\end{mathpar}
+\end{verbatim*}
+%
+\begin{mathpar}
+  \inferrule[V]{P}[S]{C}\label{rule:5}
+
+  \inferrule*{P}[S]{C}
+
+  \inferrule{P}[S]{C}\label{rule:6}
+
+  \inferrule*[W]{P}[S]{C}
+\end{mathpar}
+
+\begin{verbatim*}
+\begin{mathpar}
+\inferrule[X]{}{C}\label{rule:7}
+
+\inferrule*{}{C}
+
+\inferrule{}{C}\label{rule:8}
+
+\inferrule*[Y]{}{C}
+\end{mathpar}
+\end{verbatim*}
+
+\begin{mathpar}
+  \inferrule[X]{}{C}\label{rule:7}
+
+  \inferrule*{}{C}
+
+  \inferrule{}{C}\label{rule:8}
+
+  \inferrule*[Y]{}{C}
+\end{mathpar}
+
+\begin{verbatim*}
+\ref{rule:1}
+\ref{rule:2}
+\end{verbatim*}
+%
+\ref{rule:1}
+\ref{rule:2}
+
+\begin{verbatim*}
+\cref{rule:1}
+\cref{rule:2}
+\end{verbatim*}
+%
+\cref{rule:1}
+\cref{rule:2}
+\end{document}

@@ -1,0 +1,114 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mymathpartir}
+
+\newif\ifcapitalize
+\newif\ifcrefname
+
+\capitalizefalse
+\crefnamefalse
+
+\DeclareOption{capitalize}{\capitalizetrue}
+\DeclareOption{capitalise}{\capitalizetrue} % alias
+\DeclareOption{crefname}{\crefnametrue}
+
+\DeclareOption*{\PackageWarningNoLine{mymathpartir}{Unknown option: `\CurrentOption'}}
+
+\ProcessOptions\relax
+
+\RequirePackage{etoolbox}   % \AtEndPreamble
+\RequirePackage{mathpartir} % \inferrule, \TirName
+\RequirePackage{xparse}     % \DeclareDocumentCommand
+\RequirePackage{zref}       % \zref@extract
+
+\makeatletter
+\newif\if@needsfix
+\@needsfixfalse
+\@ifclassloaded{llncs}{
+  \@needsfixtrue
+}{
+  \@ifclassloaded{scrbook}{
+    \@needsfixtrue
+  }{}
+}
+\if@needsfix
+  \def \lefttir@name #1{\hbox {\LeftTirNameStyle{#1}}} % XXX: original definition calls \small again here
+  \def \righttir@name #1{\hbox {\RightTirNameStyle{#1}}} % XXX: original definition calls \small again here
+  \let \TirName \lefttir@name
+  \let \LeftTirName \lefttir@name
+  \let \DefTirName \lefttir@name
+  \let \LabTirName \lefttir@name
+  \let \RightTirName \righttir@name
+\fi
+\makeatother
+
+% XXX: how do \tag and \label (from amsmath) do it for equations without zref?
+\let\originferrule\inferrule
+\makeatletter
+\zref@newprop{inferrule@name}{}
+\zref@addprop{main}{inferrule@name} % add inferrule@name to main
+\newcounter{inferrule}
+\renewcommand{\theinferrule}{\zref@extract{inferrule@\the\value{inferrule}}{inferrule@name}}
+\ExplSyntaxOn
+\DeclareDocumentCommand{\inferrule}{soO{lab}mom}{% put label on top by default
+    \IfBooleanF{#1}{% numbered
+      \refstepcounter{inferrule}%
+      \IfValueTF{#2}{%
+        \zref@setcurrent{inferrule@name}{\TirName{#2}}%
+      }{%
+        \zref@setcurrent{inferrule@name}{\the\value{inferrule}}%
+      }%
+      \zref@label{inferrule@\the\value{inferrule}}%
+    }%
+    \def\inferrule@premises{#4}%
+    % to typeset side conditions as premises (as opposed to right to
+    % the rules, see below) use the following code:
+    % \IfValueT{#5}{%
+    %   \ifblank{#4}{%
+    %     \def\inferrule@premises{#5}%
+    %   }{%
+    %     \def\inferrule@premises{#4 \\ #5}%
+    %   }%
+    % }%
+    % /typeset side conditions as premises
+    \IfValueTF{#2}{% named
+      \def\@call{\originferrule*[vcenter,#3=#2]}%
+      \exp_args:No\@call{\inferrule@premises}{#6}%
+    }{%
+      \IfBooleanTF{#1}{% unnumbered, unnamed
+        \def\@call{\originferrule*[vcenter]}%
+        \exp_args:No\@call{\inferrule@premises}{#6}%
+      }{% numbered, unnamed
+        \def\@call{\originferrule*[vcenter,#3=(\the\value{inferrule})]}%
+        \exp_args:No\@call{\inferrule@premises}{#6}%
+      }%
+    }%
+    % to typeset side conditions right to the rules (as opposed to as
+    % premise, see above) use the following code:
+    \IfValueT{#5}{#5}%
+    % /typeset side conditions right to the rules
+}
+\ExplSyntaxOff
+\makeatother
+
+\ifcrefname
+  \makeatletter
+  \AtEndPreamble{
+    \@ifpackageloaded{cleveref}{}{%
+      \PackageError{mymathpartir}{%
+        `crefname' given but cleveref not loaded%
+      }{%
+        Omit `crefname' or load cleveref%
+      }}
+  }
+  \makeatother
+  \ifcapitalize
+    \AtEndPreamble{\crefname{inferrule}{Rule}{Rules}}
+  \else
+    \AtEndPreamble{\crefname{inferrule}{rule}{rules}}
+  \fi
+  \AtEndPreamble{\Crefname{inferrule}{Rule}{Rules}}
+\else
+  \ifcapitalize
+    \PackageWarningNoLine{mymathpartir}{`capitalize' (or `capitalise') meaningless without `crefname'}
+  \fi
+\fi
