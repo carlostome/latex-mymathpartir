@@ -20,17 +20,9 @@
 \RequirePackage{xparse}     % \DeclareDocumentCommand
 \RequirePackage{zref}       % \zref@extract
 
+% patch TirName* depending on the class
 \makeatletter
-\newif\if@needsfix
-\@needsfixfalse
-\@ifclassloaded{llncs}{
-  \@needsfixtrue
-}{
-  \ifdefined\KOMAClassName
-    \@needsfixtrue
-  \fi
-}
-\if@needsfix
+\ifboolexpr{ test {\@ifclassloaded{llncs}} or test {\ifdef{\KOMAClassName}} }{%
   \def \lefttir@name #1{\hbox {\LeftTirNameStyle{#1}}} % XXX: original definition calls \small again here
   \def \righttir@name #1{\hbox {\RightTirNameStyle{#1}}} % XXX: original definition calls \small again here
   \let \TirName \lefttir@name
@@ -38,7 +30,10 @@
   \let \DefTirName \lefttir@name
   \let \LabTirName \lefttir@name
   \let \RightTirName \righttir@name
-\fi
+}{}
+\ifboolexpr{ test {\@ifclassloaded{jfp}} }{%
+  \robustify{\small} % XXX: original definition defines macros inside \small
+}{}%
 \makeatother
 
 % XXX: how do \tag and \label (from amsmath) do it for equations without zref?
